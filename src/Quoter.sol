@@ -14,7 +14,6 @@ import {LiquidityMath} from "v3-core/contracts/libraries/LiquidityMath.sol";
 import {PoolTickBitmap} from "./PoolTickBitmap.sol";
 import {IQuoter} from "./IQuoter.sol";
 import {PoolAddress} from "./PoolAddress.sol";
-import {SwapImmutables} from "./SwapImmutables.sol";
 
 contract Quoter is IQuoter {
     using LowGasSafeMath for uint256;
@@ -142,6 +141,7 @@ contract Quoter is IQuoter {
 
         IUniswapV3Pool pool = getPool(params.tokenIn, params.tokenOut, params.fee);
 
+        // we need to pack a few variables to get under the stack limit
         quoteParams = QuoteParams({
             zeroForOne: zeroForOne,
             fee: params.fee,
@@ -211,7 +211,6 @@ contract Quoter is IQuoter {
         // if no price limit has been specified, cache the output amount for comparison in the swap callback
         if (params.sqrtPriceLimitX96 == 0) amountOutCached = params.amount;
 
-        // stack tooooo deep
         QuoteParams memory quoteParams = QuoteParams({
             zeroForOne: zeroForOne,
             fee: params.fee,
