@@ -21,15 +21,17 @@ contract CounterTest is Test {
         IQuoter.QuoteExactInputSingleParams memory params = IQuoter.QuoteExactInputSingleParams({
             tokenIn: 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48,
             tokenOut: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2,
-            amountIn: 1000000000, // 1k
+            amountIn: 10000 * 1e6, // 1m
             fee: 500,
             sqrtPriceLimitX96: 0
         });
 
-        (int256 amountReceived, uint160 sqrtPriceX96After) = quoter.quoteExactInputSingle(params);
+        (uint256 amountReceived, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed) =
+            quoter.quoteExactInputSingle(params);
 
         console2.log(amountReceived);
         console.log(sqrtPriceX96After);
+        console.log(initializedTicksCrossed);
 
         assertEq(true, true);
     }
