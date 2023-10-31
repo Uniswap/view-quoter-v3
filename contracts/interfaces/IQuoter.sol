@@ -25,6 +25,7 @@ interface IQuoter {
         uint160 sqrtPriceLimitX96;
     }
 
+
     /// @notice Returns the amount out received for a given exact input but for a swap of a single pool
     /// @param params The params for the quote, encoded as `QuoteExactInputSingleParams`
     /// tokenIn The token being swapped in
@@ -37,6 +38,30 @@ interface IQuoter {
     function quoteExactInputSingle(QuoteExactInputSingleParams memory params)
         external
         returns (uint256 amountOut, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed);
+
+
+    struct QuoteExactInputSingleBatchParams {
+        address tokenIn;
+        address tokenOut;
+        uint256[] amountsIn;
+        uint24 fee;
+        uint160 sqrtPriceLimitX96;
+    }
+
+    /// @notice Returns the amount out received for a given exact input but for a swap of a single pool
+    /// @param params The params for the quote, encoded as `QuoteExactInputSingleParams`
+    /// tokenIn The token being swapped in
+    /// tokenOut The token being swapped out
+    /// fee The fee of the token pool to consider for the pair
+    /// amountIn The desired input amount
+    /// sqrtPriceLimitX96 The price limit of the pool that cannot be exceeded by the swap
+    /// @return amountsOut The amount of `tokenOut` that would be received
+    /// @return sqrtPricesX96After The sqrt price of the pool after the swap
+    /// @return initializedTicksCrossedList lots of ticks lol
+    function quoteExactInputBatch(QuoteExactInputSingleBatchParams memory params)
+        external
+        returns (uint256[] memory amountsOut, uint160[] memory sqrtPricesX96After, 
+        uint32[] memory initializedTicksCrossedList);
 
     /// @notice Returns the amount in required for a given exact output swap without executing the swap
     /// @param path The path of the swap, i.e. each token pair and the pool fee. Path must be provided in reverse order
@@ -68,67 +93,5 @@ interface IQuoter {
     function quoteExactOutputSingle(QuoteExactOutputSingleParams memory params)
         external
         returns (uint256 amountIn, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed);
-
-    struct Slot0 {
-        // the current price
-        uint160 sqrtPriceX96;
-        // the current tick
-        int24 tick;
-    }
-
-    struct SwapCache {
-        // the protocol fee for the input token
-        uint8 feeProtocol;
-        // liquidity at the beginning of the swap
-        uint128 liquidityStart;
-        // the timestamp of the current block
-        uint32 blockTimestamp;
-        // the current value of the tick accumulator, computed only if we cross an initialized tick
-        int56 tickCumulative;
-        // the current value of seconds per liquidity accumulator, computed only if we cross an initialized tick
-        uint160 secondsPerLiquidityCumulativeX128;
-        // whether we've computed and cached the above two accumulators
-        bool computedLatestObservation;
-    }
-
-    // the top level state of the swap, the results of which are recorded in storage at the end
-    struct SwapState {
-        // the amount remaining to be swapped in/out of the input/output asset
-        int256 amountSpecifiedRemaining;
-        // the amount already swapped out/in of the output/input asset
-        int256 amountCalculated;
-        // current sqrt(price)
-        uint160 sqrtPriceX96;
-        // the tick associated with the current price
-        int24 tick;
-        // the global fee growth of the input token
-        uint256 feeGrowthGlobalX128;
-        // amount of input token paid as protocol fee
-        uint128 protocolFee;
-        // the current liquidity in range
-        uint128 liquidity;
-    }
-
-    struct StepComputations {
-        // the price at the beginning of the step
-        uint160 sqrtPriceStartX96;
-        // the next tick to swap to from the current tick in the swap direction
-        int24 tickNext;
-        // whether tickNext is initialized or not
-        bool initialized;
-        // sqrt(price) for the next tick (1/0)
-        uint160 sqrtPriceNextX96;
-        // how much is being swapped in in this step
-        uint256 amountIn;
-        // how much is being swapped out
-        uint256 amountOut;
-        // how much fee is being paid in
-        uint256 feeAmount;
-    }
-
-    struct QuoteParams {
-        bool zeroForOne;
-        uint24 fee;
-        uint160 sqrtPriceLimitX96;
-    }
+        
 }

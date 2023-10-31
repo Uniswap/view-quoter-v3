@@ -11,11 +11,14 @@ import "v3-core/contracts/libraries/SafeCast.sol";
 import "v3-periphery/contracts/libraries/Path.sol";
 import {SqrtPriceMath} from "v3-core/contracts/libraries/SqrtPriceMath.sol";
 import {LiquidityMath} from "v3-core/contracts/libraries/LiquidityMath.sol";
-import {PoolTickBitmap} from "./PoolTickBitmap.sol";
-import {IQuoter} from "./IQuoter.sol";
-import {PoolAddress} from "./PoolAddress.sol";
+import {PoolTickBitmap} from "./libraries/PoolTickBitmap.sol";
+import {IQuoter} from "./interfaces/IQuoter.sol";
+import {PoolAddress} from "./libraries/PoolAddress.sol";
+import {QuoterMath} from "./libraries/QuoterMath.sol";
+import {Test, console2, console} from "forge-std/Test.sol";
 
 contract Quoter is IQuoter {
+    using QuoterMath for *;
     using LowGasSafeMath for uint256;
     using LowGasSafeMath for int256;
     using SafeCast for uint256;
@@ -32,101 +35,6 @@ contract Quoter is IQuoter {
         return IUniswapV3Pool(PoolAddress.computeAddress(factory, PoolAddress.getPoolKey(tokenA, tokenB, fee)));
     }
 
-    function fillSlot0(IUniswapV3Pool pool) private view returns (Slot0 memory slot0) {
-        (slot0.sqrtPriceX96, slot0.tick,,,,,) = pool.slot0();
-
-        return slot0;
-    }
-
-    function quote(IUniswapV3Pool pool, int256 amount, QuoteParams memory quoteParams)
-        public
-        view
-        returns (int256 amount0, int256 amount1, uint160 sqrtPriceAfterX96, uint32 initializedTicksCrossed)
-    {
-        bool exactInput = amount > 0;
-        initializedTicksCrossed = 0;
-
-        Slot0 memory slot0 = fillSlot0(pool);
-        int24 tickSpacing = pool.tickSpacing();
-
-        SwapState memory state = SwapState({
-            amountSpecifiedRemaining: amount,
-            amountCalculated: 0,
-            sqrtPriceX96: slot0.sqrtPriceX96,
-            tick: slot0.tick,
-            feeGrowthGlobalX128: 0,
-            protocolFee: 0,
-            liquidity: pool.liquidity()
-        });
-
-        while (state.amountSpecifiedRemaining != 0 && state.sqrtPriceX96 != quoteParams.sqrtPriceLimitX96) {
-            StepComputations memory step;
-
-            step.sqrtPriceStartX96 = state.sqrtPriceX96;
-
-            (step.tickNext, step.initialized) =
-                PoolTickBitmap.nextInitializedTickWithinOneWord(pool, tickSpacing, state.tick, quoteParams.zeroForOne);
-
-            // ensure that we do not overshoot the min/max tick, as the tick bitmap is not aware of these bounds
-            if (step.tickNext < TickMath.MIN_TICK) {
-                step.tickNext = TickMath.MIN_TICK;
-            } else if (step.tickNext > TickMath.MAX_TICK) {
-                step.tickNext = TickMath.MAX_TICK;
-            }
-
-            // get the price for the next tick
-            step.sqrtPriceNextX96 = TickMath.getSqrtRatioAtTick(step.tickNext);
-
-            // compute values to swap to the target tick, price limit, or point where input/output amount is exhausted
-            (state.sqrtPriceX96, step.amountIn, step.amountOut, step.feeAmount) = SwapMath.computeSwapStep(
-                state.sqrtPriceX96,
-                (
-                    quoteParams.zeroForOne
-                        ? step.sqrtPriceNextX96 < quoteParams.sqrtPriceLimitX96
-                        : step.sqrtPriceNextX96 > quoteParams.sqrtPriceLimitX96
-                ) ? quoteParams.sqrtPriceLimitX96 : step.sqrtPriceNextX96,
-                state.liquidity,
-                state.amountSpecifiedRemaining,
-                quoteParams.fee
-            );
-
-            if (exactInput) {
-                state.amountSpecifiedRemaining -= (step.amountIn + step.feeAmount).toInt256();
-                state.amountCalculated = state.amountCalculated.sub(step.amountOut.toInt256());
-            } else {
-                state.amountSpecifiedRemaining += step.amountOut.toInt256();
-                state.amountCalculated = state.amountCalculated.add((step.amountIn + step.feeAmount).toInt256());
-            }
-
-            // shift tick if we reached the next price
-            if (state.sqrtPriceX96 == step.sqrtPriceNextX96) {
-                // if the tick is initialized, run the tick transition
-                if (step.initialized) {
-                    (, int128 liquidityNet,,,,,,) = pool.ticks(step.tickNext);
-
-                    // if we're moving leftward, we interpret liquidityNet as the opposite sign
-                    // safe because liquidityNet cannot be type(int128).min
-                    if (quoteParams.zeroForOne) liquidityNet = -liquidityNet;
-
-                    state.liquidity = LiquidityMath.addDelta(state.liquidity, liquidityNet);
-
-                    initializedTicksCrossed++;
-                }
-
-                state.tick = quoteParams.zeroForOne ? step.tickNext - 1 : step.tickNext;
-            } else if (state.sqrtPriceX96 != step.sqrtPriceStartX96) {
-                // recompute unless we're on a lower tick boundary (i.e. already transitioned ticks), and haven't moved
-                state.tick = TickMath.getTickAtSqrtRatio(state.sqrtPriceX96);
-            }
-        }
-
-        (amount0, amount1) = quoteParams.zeroForOne == exactInput
-            ? (amount - state.amountSpecifiedRemaining, state.amountCalculated)
-            : (state.amountCalculated, amount - state.amountSpecifiedRemaining);
-
-        sqrtPriceAfterX96 = state.sqrtPriceX96;
-    }
-
     function quoteExactInputSingle(QuoteExactInputSingleParams memory params)
         public
         view
@@ -135,25 +43,63 @@ contract Quoter is IQuoter {
     {
         int256 amount0;
         int256 amount1;
-        QuoteParams memory quoteParams;
-
+    
         bool zeroForOne = params.tokenIn < params.tokenOut;
 
         IUniswapV3Pool pool = getPool(params.tokenIn, params.tokenOut, params.fee);
 
         // we need to pack a few variables to get under the stack limit
-        quoteParams = QuoteParams({
+        QuoterMath.QuoteParams memory quoteParams = QuoterMath.QuoteParams({
             zeroForOne: zeroForOne,
+            fee: params.fee,
+            sqrtPriceLimitX96: params.sqrtPriceLimitX96 == 0
+                ? (zeroForOne ? TickMath.MIN_SQRT_RATIO + 1 : TickMath.MAX_SQRT_RATIO - 1)
+                : params.sqrtPriceLimitX96,
+            exactInput: false
+        });
+
+        (amount0, amount1, sqrtPriceX96After, initializedTicksCrossed) =
+            QuoterMath.quote(pool, params.amountIn.toInt256(), quoteParams);
+
+        amountReceived = amount0 > 0 ? uint256(-amount1) : uint256(-amount0);
+    }
+
+    function quoteExactInputBatch(QuoteExactInputSingleBatchParams memory params)
+        public
+        view
+        override
+        returns (uint256[] memory amountsOut, uint160[] memory sqrtPricesX96After, 
+        uint32[] memory initializedTicksCrossedList)
+        
+    {
+        int256[] memory amount0;
+        int256[] memory amount1;
+
+        int256[] memory amounts = new int256[](params.amountsIn.length);
+        for (uint256 i = 0; i < params.amountsIn.length; i++) {
+            amounts[i] = (params.amountsIn[i].toInt256());
+        }
+    
+        bool zeroForOne = params.tokenIn < params.tokenOut;
+        IUniswapV3Pool pool = getPool(params.tokenIn, params.tokenOut, params.fee);
+
+        // we need to pack a few variables to get under the stack limit
+        QuoterMath.QuoteParams memory quoteParams = QuoterMath.QuoteParams({
+            zeroForOne: zeroForOne,
+            exactInput: true, // will be overridden
             fee: params.fee,
             sqrtPriceLimitX96: params.sqrtPriceLimitX96 == 0
                 ? (zeroForOne ? TickMath.MIN_SQRT_RATIO + 1 : TickMath.MAX_SQRT_RATIO - 1)
                 : params.sqrtPriceLimitX96
         });
 
-        (amount0, amount1, sqrtPriceX96After, initializedTicksCrossed) =
-            quote(pool, params.amountIn.toInt256(), quoteParams);
+        (amount0, amount1, sqrtPricesX96After, initializedTicksCrossedList) =
+            QuoterMath.quoteBatch(pool, amounts, quoteParams);
 
-        amountReceived = amount0 > 0 ? uint256(-amount1) : uint256(-amount0);
+        amountsOut = new uint256[](amount0.length);
+        for (uint256 i = 0; i < amount0.length; i++) {
+            amountsOut[i] = amount0[i] > 0 ? uint256(-amount1[i]) : uint256(-amount0[i]);
+        }
     }
 
     function quoteExactInput(bytes memory path, uint256 amountIn)
@@ -211,8 +157,9 @@ contract Quoter is IQuoter {
         // if no price limit has been specified, cache the output amount for comparison in the swap callback
         if (params.sqrtPriceLimitX96 == 0) amountOutCached = params.amount;
 
-        QuoteParams memory quoteParams = QuoteParams({
+        QuoterMath.QuoteParams memory quoteParams = QuoterMath.QuoteParams({
             zeroForOne: zeroForOne,
+            exactInput: true, // will be overridden
             fee: params.fee,
             sqrtPriceLimitX96: params.sqrtPriceLimitX96 == 0
                 ? (zeroForOne ? TickMath.MIN_SQRT_RATIO + 1 : TickMath.MAX_SQRT_RATIO - 1)
@@ -220,7 +167,7 @@ contract Quoter is IQuoter {
         });
 
         (amount0, amount1, sqrtPriceX96After, initializedTicksCrossed) =
-            quote(pool, -(params.amount.toInt256()), quoteParams);
+            QuoterMath.quote(pool, -(params.amount.toInt256()), quoteParams);
 
         amountIn = amount0 > 0 ? uint256(amount0) : uint256(amount1);
         amountReceived = amount0 > 0 ? uint256(-amount1) : uint256(amount0);
