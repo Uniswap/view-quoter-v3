@@ -15,7 +15,6 @@ import {PoolTickBitmap} from "./libraries/PoolTickBitmap.sol";
 import {IQuoter} from "./interfaces/IQuoter.sol";
 import {PoolAddress} from "./libraries/PoolAddress.sol";
 import {QuoterMath} from "./libraries/QuoterMath.sol";
-import {Test, console2, console} from "forge-std/Test.sol";
 
 contract Quoter is IQuoter {
     using QuoterMath for *;
@@ -25,6 +24,7 @@ contract Quoter is IQuoter {
     using SafeCast for int256;
     using Path for bytes;
 
+    // The v3 factory address
     address factory;
 
     constructor(address _factory) {
@@ -35,6 +35,7 @@ contract Quoter is IQuoter {
         return IUniswapV3Pool(PoolAddress.computeAddress(factory, PoolAddress.getPoolKey(tokenA, tokenB, fee)));
     }
 
+    /// @inheritdoc IQuoter
     function quoteExactInputSingle(QuoteExactInputSingleParams memory params)
         public
         view
@@ -64,6 +65,7 @@ contract Quoter is IQuoter {
         amountReceived = amount0 > 0 ? uint256(-amount1) : uint256(-amount0);
     }
 
+    /// @inheritdoc IQuoter
     function quoteExactInputBatch(QuoteExactInputSingleBatchParams memory params)
         public
         view
@@ -102,6 +104,7 @@ contract Quoter is IQuoter {
         }
     }
 
+    /// @inheritdoc IQuoter
     function quoteExactInput(bytes memory path, uint256 amountIn)
         public
         view
@@ -140,6 +143,7 @@ contract Quoter is IQuoter {
         }
     }
 
+    /// @inheritdoc IQuoter
     function quoteExactOutputSingle(QuoteExactOutputSingleParams memory params)
         public
         view
@@ -176,6 +180,7 @@ contract Quoter is IQuoter {
         if (amountOutCached != 0) require(amountReceived == amountOutCached);
     }
 
+    /// @inheritdoc IQuoter
     function quoteExactOutput(bytes memory path, uint256 amountOut)
         public
         view

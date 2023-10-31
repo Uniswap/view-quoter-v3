@@ -45,7 +45,7 @@ library QuoterMath {
         return slot0;
     }
 
-        struct SwapCache {
+    struct SwapCache {
         // the protocol fee for the input token
         uint8 feeProtocol;
         // liquidity at the beginning of the swap
@@ -95,6 +95,15 @@ library QuoterMath {
         uint256 feeAmount;
     }
 
+    /// @notice Utility function called by the quote functions to 
+    /// calculate the amounts in/out for a v3 swap
+    /// @param pool the Uniswap v3 pool interface
+    /// @param amount the input amount calculated
+    /// @param quoteParams a packed dataset of flags/inputs used to get around stack limit 
+    /// @return amount0 the amount of token0 sent in or out of the pool
+    /// @return amount1 the amount of token1 sent in or out of the pool
+    /// @return sqrtPriceAfterX96 the price of the pool after the swap
+    /// @return initializedTicksCrossed the number of initialized ticks LOADED IN 
     function quote(IUniswapV3Pool pool, int256 amount, QuoteParams memory quoteParams)
         public
         view
@@ -182,8 +191,16 @@ library QuoterMath {
 
         sqrtPriceAfterX96 = state.sqrtPriceX96;
     }
-
-    /// it is possible with rounding bc of breaking up the inputs in the last tick that the quotes may be 1 wei off.
+    /// @notice Utility function called by the quote functions to recieve batched quotes
+    /// @param pool the Uniswap v3 pool interface
+    /// @param amounts the input amounts to calculate in a list
+    /// @param quoteParams a packed dataset of flags/inputs used to get around stack limit 
+    /// @return amounts0 a list of the amount of token0 sent in or out of the pool
+    /// @return amounts1 a list of the amount of token1 sent in or out of the pool
+    /// @return sqrtPricesAfterX96 the prices of the pool after the swap
+    /// @return initializedTicksCrossedList the number of initialized ticks LOADED IN after each swap 
+    /// @notice it is possible with rounding bc of breaking up the inputs that the quotes may be 1 wei off.
+    /// @notice this is because the conjoined swap would not have rounded down but the two individual ones did
     function quoteBatch(IUniswapV3Pool pool, int256[] memory amounts, QuoteParams memory quoteParams)
         public
         view

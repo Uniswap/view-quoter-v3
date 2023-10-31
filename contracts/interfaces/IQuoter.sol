@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-pragma solidity >=0.7.5;
+pragma solidity ^0.7.6;
 pragma abicoder v2;
 
 /// @title QuoterV2 Interface
@@ -13,6 +13,7 @@ interface IQuoter {
     /// @param amountIn The amount of the first token to swap
     /// @return amountOut The amount of the last token that would be received
     /// @return sqrtPriceX96AfterList List of the sqrt price after the swap for each pool in the path
+    /// @return initializedTicksCrossedList List of number of initialized ticks loaded
     function quoteExactInput(bytes memory path, uint256 amountIn)
         external
         returns (uint256 amountOut, uint160[] memory sqrtPriceX96AfterList, uint32[] memory initializedTicksCrossedList);
@@ -29,12 +30,13 @@ interface IQuoter {
     /// @notice Returns the amount out received for a given exact input but for a swap of a single pool
     /// @param params The params for the quote, encoded as `QuoteExactInputSingleParams`
     /// tokenIn The token being swapped in
+    /// amountIn The desired input amount
     /// tokenOut The token being swapped out
     /// fee The fee of the token pool to consider for the pair
-    /// amountIn The desired input amount
     /// sqrtPriceLimitX96 The price limit of the pool that cannot be exceeded by the swap
     /// @return amountOut The amount of `tokenOut` that would be received
     /// @return sqrtPriceX96After The sqrt price of the pool after the swap
+    /// @return initializedTicksCrossed The number of initialized ticks loaded
     function quoteExactInputSingle(QuoteExactInputSingleParams memory params)
         external
         returns (uint256 amountOut, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed);
@@ -52,26 +54,16 @@ interface IQuoter {
     /// @param params The params for the quote, encoded as `QuoteExactInputSingleParams`
     /// tokenIn The token being swapped in
     /// tokenOut The token being swapped out
+    /// amountIn The desired input amounts
     /// fee The fee of the token pool to consider for the pair
-    /// amountIn The desired input amount
     /// sqrtPriceLimitX96 The price limit of the pool that cannot be exceeded by the swap
-    /// @return amountsOut The amount of `tokenOut` that would be received
-    /// @return sqrtPricesX96After The sqrt price of the pool after the swap
-    /// @return initializedTicksCrossedList lots of ticks lol
+    /// @return amountsOut An array of the amount of `tokenOut` that would be received
+    /// @return sqrtPricesX96After An array of the sqrt price of the pool after the swap
+    /// @return initializedTicksCrossedList An array of lots of ticks
     function quoteExactInputBatch(QuoteExactInputSingleBatchParams memory params)
         external
         returns (uint256[] memory amountsOut, uint160[] memory sqrtPricesX96After, 
         uint32[] memory initializedTicksCrossedList);
-
-    /// @notice Returns the amount in required for a given exact output swap without executing the swap
-    /// @param path The path of the swap, i.e. each token pair and the pool fee. Path must be provided in reverse order
-    /// @param amountOut The amount of the last token to receive
-    /// @return amountIn The amount of first token required to be paid
-    /// @return sqrtPriceX96AfterList List of the sqrt price after the swap for each pool in the path
-    /// @return initializedTicksCrossedList List of the initialized ticks that the swap crossed for each pool in the path
-    function quoteExactOutput(bytes memory path, uint256 amountOut)
-        external
-        returns (uint256 amountIn, uint160[] memory sqrtPriceX96AfterList, uint32[] memory initializedTicksCrossedList);
 
     struct QuoteExactOutputSingleParams {
         address tokenIn;
@@ -85,13 +77,23 @@ interface IQuoter {
     /// @param params The params for the quote, encoded as `QuoteExactOutputSingleParams`
     /// tokenIn The token being swapped in
     /// tokenOut The token being swapped out
-    /// fee The fee of the token pool to consider for the pair
     /// amountOut The desired output amount
+    /// fee The fee of the token pool to consider for the pair
     /// sqrtPriceLimitX96 The price limit of the pool that cannot be exceeded by the swap
     /// @return amountIn The amount required as the input for the swap in order to receive `amountOut`
     /// @return sqrtPriceX96After The sqrt price of the pool after the swap
+    /// @return initializedTicksCrossed The number of initialized ticks loaded
     function quoteExactOutputSingle(QuoteExactOutputSingleParams memory params)
         external
-        returns (uint256 amountIn, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed);
-        
+        returns (uint256 amountIn, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed); 
+
+    /// @notice Returns the amount in required for a given exact output swap without executing the swap
+    /// @param path The path of the swap, i.e. each token pair and the pool fee. Path must be provided in reverse order
+    /// @param amountOut The amount of the last token to receive
+    /// @return amountIn The amount of first token required to be paid
+    /// @return sqrtPriceX96AfterList List of the sqrt price after the swap for each pool in the path
+    /// @return initializedTicksCrossedList List of the initialized ticks that the swap crossed for each pool in the path
+    function quoteExactOutput(bytes memory path, uint256 amountOut)
+        external
+        returns (uint256 amountIn, uint160[] memory sqrtPriceX96AfterList, uint32[] memory initializedTicksCrossedList);
 }
