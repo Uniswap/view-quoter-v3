@@ -66,45 +66,6 @@ contract Quoter is IQuoter {
     }
 
     /// @inheritdoc IQuoter
-    function quoteExactInputBatch(QuoteExactInputSingleBatchParams memory params)
-        public
-        view
-        override
-        returns (uint256[] memory amountsOut, uint160[] memory sqrtPricesX96After, 
-        uint32[] memory initializedTicksCrossedList)
-        
-    {
-        int256[] memory amount0;
-        int256[] memory amount1;
-
-        int256[] memory amounts = new int256[](params.amountsIn.length);
-        for (uint256 i = 0; i < params.amountsIn.length; i++) {
-            amounts[i] = (params.amountsIn[i].toInt256());
-        }
-    
-        bool zeroForOne = params.tokenIn < params.tokenOut;
-        IUniswapV3Pool pool = getPool(params.tokenIn, params.tokenOut, params.fee);
-
-        // we need to pack a few variables to get under the stack limit
-        QuoterMath.QuoteParams memory quoteParams = QuoterMath.QuoteParams({
-            zeroForOne: zeroForOne,
-            exactInput: true, // will be overridden
-            fee: params.fee,
-            sqrtPriceLimitX96: params.sqrtPriceLimitX96 == 0
-                ? (zeroForOne ? TickMath.MIN_SQRT_RATIO + 1 : TickMath.MAX_SQRT_RATIO - 1)
-                : params.sqrtPriceLimitX96
-        });
-
-        (amount0, amount1, sqrtPricesX96After, initializedTicksCrossedList) =
-            QuoterMath.quoteBatch(pool, amounts, quoteParams);
-
-        amountsOut = new uint256[](amount0.length);
-        for (uint256 i = 0; i < amount0.length; i++) {
-            amountsOut[i] = amount0[i] > 0 ? uint256(-amount1[i]) : uint256(-amount0[i]);
-        }
-    }
-
-    /// @inheritdoc IQuoter
     function quoteExactInput(bytes memory path, uint256 amountIn)
         public
         view

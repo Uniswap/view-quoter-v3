@@ -22,7 +22,7 @@ contract QuoterTest is Test {
         quoterV2 = IQuoterV2(0x61fFE014bA17989E743c5F6cB21bF9697530B21e);
     }
 
-    /// forge-config: default.fuzz.runs = 500
+    /// forge-config: default.fuzz.runs = 1000
     function testFuzzQuoters(bool side, uint256 amount) public {
         // make the tests mean something (a non-small input) bc otherwise everything rounds to 0
         vm.assume(amount > 10000);
