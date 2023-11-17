@@ -95,15 +95,15 @@ library QuoterMath {
         uint256 feeAmount;
     }
 
-    /// @notice Utility function called by the quote functions to 
+    /// @notice Utility function called by the quote functions to
     /// calculate the amounts in/out for a v3 swap
     /// @param pool the Uniswap v3 pool interface
     /// @param amount the input amount calculated
-    /// @param quoteParams a packed dataset of flags/inputs used to get around stack limit 
+    /// @param quoteParams a packed dataset of flags/inputs used to get around stack limit
     /// @return amount0 the amount of token0 sent in or out of the pool
     /// @return amount1 the amount of token1 sent in or out of the pool
     /// @return sqrtPriceAfterX96 the price of the pool after the swap
-    /// @return initializedTicksCrossed the number of initialized ticks LOADED IN 
+    /// @return initializedTicksCrossed the number of initialized ticks LOADED IN
     function quote(IUniswapV3Pool pool, int256 amount, QuoteParams memory quoteParams)
         public
         view
@@ -129,8 +129,9 @@ library QuoterMath {
 
             step.sqrtPriceStartX96 = state.sqrtPriceX96;
 
-            (step.tickNext, step.initialized) =
-                PoolTickBitmap.nextInitializedTickWithinOneWord(pool, slot0.tickSpacing, state.tick, quoteParams.zeroForOne);
+            (step.tickNext, step.initialized) = PoolTickBitmap.nextInitializedTickWithinOneWord(
+                pool, slot0.tickSpacing, state.tick, quoteParams.zeroForOne
+            );
 
             // ensure that we do not overshoot the min/max tick, as the tick bitmap is not aware of these bounds
             if (step.tickNext < TickMath.MIN_TICK) {

@@ -60,7 +60,7 @@ interface IQuoter {
     /// @return initializedTicksCrossed The number of initialized ticks loaded
     function quoteExactOutputSingle(QuoteExactOutputSingleParams memory params)
         external
-        returns (uint256 amountIn, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed); 
+        returns (uint256 amountIn, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed);
 
     /// @notice Returns the amount in required for a given exact output swap without executing the swap
     /// @param path The path of the swap, i.e. each token pair and the pool fee. Path must be provided in reverse order
