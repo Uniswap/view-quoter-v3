@@ -24,7 +24,7 @@ contract QuoterTest is Test {
         quoterV2 = IQuoterV2(0x61fFE014bA17989E743c5F6cB21bF9697530B21e);
     }
 
-    /// forge-config: default.fuzz.runs = 1000
+    /// forge-config: default.fuzz.runs = 5000
     function testFuzzInputQuoters(bool side, uint256 amount) public {
         // make the tests mean something (a non-small input) bc otherwise everything rounds to 0
         vm.assume(amount > 10000);
@@ -81,7 +81,7 @@ contract QuoterTest is Test {
         assertEq(sqrtPriceX96AfterV3 == sqrtPriceX96AfterV2, true);
     }
 
-    /// forge-config: default.fuzz.runs = 1000
+    /// forge-config: default.fuzz.runs = 5000
     function testFuzzOutputQuoters(bool side, uint256 amount) public {
         // make the tests mean something (a non-small input) bc otherwise everything rounds to 0
         vm.assume(amount > 10000);
