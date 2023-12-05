@@ -18,6 +18,30 @@ interface IQuoter {
         external
         returns (uint256 amountOut, uint160[] memory sqrtPriceX96AfterList, uint32[] memory initializedTicksCrossedList);
 
+    struct QuoteExactInputSingleWithPoolParams {
+        address tokenIn;
+        address tokenOut;
+        uint256 amountIn;
+        address pool;
+        uint24 fee;
+        uint160 sqrtPriceLimitX96;
+    }
+
+    /// @notice Returns the amount out received for a given exact input but for a swap of a single pool
+    /// @param params The params for the quote, encoded as `quoteExactInputSingleWithPool`
+    /// tokenIn The token being swapped in
+    /// amountIn The desired input amount
+    /// tokenOut The token being swapped out
+    /// fee The fee of the pool to consider for the pair
+    /// pool The address of the pool to consider for the pair
+    /// sqrtPriceLimitX96 The price limit of the pool that cannot be exceeded by the swap
+    /// @return amountOut The amount of `tokenOut` that would be received
+    /// @return sqrtPriceX96After The sqrt price of the pool after the swap
+    /// @return initializedTicksCrossed The number of initialized ticks loaded
+    function quoteExactInputSingleWithPool(QuoteExactInputSingleWithPoolParams memory params)
+        external
+        returns (uint256 amountOut, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed);
+
     struct QuoteExactInputSingleParams {
         address tokenIn;
         address tokenOut;
@@ -39,6 +63,30 @@ interface IQuoter {
     function quoteExactInputSingle(QuoteExactInputSingleParams memory params)
         external
         returns (uint256 amountOut, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed);
+
+    struct QuoteExactOutputSingleWithPoolParams {
+        address tokenIn;
+        address tokenOut;
+        uint256 amount;
+        uint24 fee;
+        address pool;
+        uint160 sqrtPriceLimitX96;
+    }
+
+    /// @notice Returns the amount in required to receive the given exact output amount but for a swap of a single pool
+    /// @param params The params for the quote, encoded as `QuoteExactOutputSingleWithPoolParams`
+    /// tokenIn The token being swapped in
+    /// tokenOut The token being swapped out
+    /// amount The desired output amount
+    /// fee The fee of the token pool to consider for the pair
+    /// pool The address of the pool to consider for the pair
+    /// sqrtPriceLimitX96 The price limit of the pool that cannot be exceeded by the swap
+    /// @return amountIn The amount required as the input for the swap in order to receive `amountOut`
+    /// @return sqrtPriceX96After The sqrt price of the pool after the swap
+    /// @return initializedTicksCrossed The number of initialized ticks loaded
+    function quoteExactOutputSingleWithPool(QuoteExactOutputSingleWithPoolParams memory params)
+        external
+        returns (uint256 amountIn, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed);
 
     struct QuoteExactOutputSingleParams {
         address tokenIn;

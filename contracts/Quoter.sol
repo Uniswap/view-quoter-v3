@@ -31,12 +31,12 @@ contract Quoter is IQuoter {
         factory = _factory;
     }
 
-    function getPool(address tokenA, address tokenB, uint24 fee) private view returns (IUniswapV3Pool) {
-        return IUniswapV3Pool(PoolAddress.computeAddress(factory, PoolAddress.getPoolKey(tokenA, tokenB, fee)));
+    function getPool(address tokenA, address tokenB, uint24 fee) private view returns (address pool) {
+        pool = PoolAddress.computeAddress(factory, PoolAddress.getPoolKey(tokenA, tokenB, fee));
     }
 
     /// @inheritdoc IQuoter
-    function quoteExactInputSingle(QuoteExactInputSingleParams memory params)
+    function quoteExactInputSingleWithPool(QuoteExactInputSingleWithPoolParams memory params)
         public
         view
         override
@@ -46,8 +46,7 @@ contract Quoter is IQuoter {
         int256 amount1;
 
         bool zeroForOne = params.tokenIn < params.tokenOut;
-
-        IUniswapV3Pool pool = getPool(params.tokenIn, params.tokenOut, params.fee);
+        IUniswapV3Pool pool = IUniswapV3Pool(params.pool);
 
         // we need to pack a few variables to get under the stack limit
         QuoterMath.QuoteParams memory quoteParams = QuoterMath.QuoteParams({
@@ -63,6 +62,27 @@ contract Quoter is IQuoter {
             QuoterMath.quote(pool, params.amountIn.toInt256(), quoteParams);
 
         amountReceived = amount0 > 0 ? uint256(-amount1) : uint256(-amount0);
+    }
+
+    /// @inheritdoc IQuoter
+    function quoteExactInputSingle(QuoteExactInputSingleParams memory params)
+        public
+        view
+        override
+        returns (uint256 amountReceived, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed)
+    {
+        address pool = getPool(params.tokenIn, params.tokenOut, params.fee);
+
+        QuoteExactInputSingleWithPoolParams memory poolParams = QuoteExactInputSingleWithPoolParams({
+            tokenIn: params.tokenIn,
+            tokenOut: params.tokenOut,
+            amountIn: params.amountIn,
+            fee: params.fee,
+            pool: pool,
+            sqrtPriceLimitX96: 0
+        });
+
+        (amountReceived, sqrtPriceX96After, initializedTicksCrossed) = quoteExactInputSingleWithPool(poolParams);
     }
 
     /// @inheritdoc IQuoter
@@ -105,7 +125,7 @@ contract Quoter is IQuoter {
     }
 
     /// @inheritdoc IQuoter
-    function quoteExactOutputSingle(QuoteExactOutputSingleParams memory params)
+    function quoteExactOutputSingleWithPool(QuoteExactOutputSingleWithPoolParams memory params)
         public
         view
         override
@@ -116,7 +136,7 @@ contract Quoter is IQuoter {
         uint256 amountReceived;
 
         bool zeroForOne = params.tokenIn < params.tokenOut;
-        IUniswapV3Pool pool = getPool(params.tokenIn, params.tokenOut, params.fee);
+        IUniswapV3Pool pool = IUniswapV3Pool(params.pool);
 
         uint256 amountOutCached = 0;
         // if no price limit has been specified, cache the output amount for comparison in the swap callback
@@ -139,6 +159,27 @@ contract Quoter is IQuoter {
 
         // did we get the full amount?
         if (amountOutCached != 0) require(amountReceived == amountOutCached);
+    }
+
+    /// @inheritdoc IQuoter
+    function quoteExactOutputSingle(QuoteExactOutputSingleParams memory params)
+        public
+        view
+        override
+        returns (uint256 amountIn, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed)
+    {
+        address pool = getPool(params.tokenIn, params.tokenOut, params.fee);
+
+        QuoteExactOutputSingleWithPoolParams memory poolParams = QuoteExactOutputSingleWithPoolParams({
+            tokenIn: params.tokenIn,
+            tokenOut: params.tokenOut,
+            amount: params.amount,
+            fee: params.fee,
+            pool: pool,
+            sqrtPriceLimitX96: 0
+        });
+
+        (amountIn, sqrtPriceX96After, initializedTicksCrossed) = quoteExactOutputSingleWithPool(poolParams);
     }
 
     /// @inheritdoc IQuoter
