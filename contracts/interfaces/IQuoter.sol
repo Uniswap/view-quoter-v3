@@ -16,7 +16,12 @@ interface IQuoter {
     /// @return initializedTicksCrossedList List of number of initialized ticks loaded
     function quoteExactInput(bytes memory path, uint256 amountIn)
         external
-        returns (uint256 amountOut, uint160[] memory sqrtPriceX96AfterList, uint32[] memory initializedTicksCrossedList);
+        returns (
+            uint256 amountOut,
+            uint160[] memory sqrtPriceX96AfterList,
+            uint32[] memory initializedTicksCrossedList,
+            uint256 gasEstimate
+        );
 
     struct QuoteExactInputSingleWithPoolParams {
         address tokenIn;
@@ -40,7 +45,7 @@ interface IQuoter {
     /// @return initializedTicksCrossed The number of initialized ticks loaded
     function quoteExactInputSingleWithPool(QuoteExactInputSingleWithPoolParams memory params)
         external
-        returns (uint256 amountOut, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed);
+        returns (uint256 amountOut, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed, uint256 gasEstimate);
 
     struct QuoteExactInputSingleParams {
         address tokenIn;
@@ -62,7 +67,7 @@ interface IQuoter {
     /// @return initializedTicksCrossed The number of initialized ticks loaded
     function quoteExactInputSingle(QuoteExactInputSingleParams memory params)
         external
-        returns (uint256 amountOut, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed);
+        returns (uint256 amountOut, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed, uint256 gasEstimate);
 
     struct QuoteExactOutputSingleWithPoolParams {
         address tokenIn;
@@ -86,7 +91,7 @@ interface IQuoter {
     /// @return initializedTicksCrossed The number of initialized ticks loaded
     function quoteExactOutputSingleWithPool(QuoteExactOutputSingleWithPoolParams memory params)
         external
-        returns (uint256 amountIn, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed);
+        returns (uint256 amountIn, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed, uint256 gasEstimate);
 
     struct QuoteExactOutputSingleParams {
         address tokenIn;
@@ -108,7 +113,7 @@ interface IQuoter {
     /// @return initializedTicksCrossed The number of initialized ticks loaded
     function quoteExactOutputSingle(QuoteExactOutputSingleParams memory params)
         external
-        returns (uint256 amountIn, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed);
+        returns (uint256 amountIn, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed, uint256 gasEstimate);
 
     /// @notice Returns the amount in required for a given exact output swap without executing the swap
     /// @param path The path of the swap, i.e. each token pair and the pool fee. Path must be provided in reverse order
@@ -118,5 +123,10 @@ interface IQuoter {
     /// @return initializedTicksCrossedList List of the initialized ticks that the swap crossed for each pool in the path
     function quoteExactOutput(bytes memory path, uint256 amountOut)
         external
-        returns (uint256 amountIn, uint160[] memory sqrtPriceX96AfterList, uint32[] memory initializedTicksCrossedList);
+        returns (
+            uint256 amountIn,
+            uint160[] memory sqrtPriceX96AfterList,
+            uint32[] memory initializedTicksCrossedList,
+            uint256 gasEstimate
+        );
 }

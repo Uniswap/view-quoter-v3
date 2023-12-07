@@ -40,7 +40,7 @@ contract Quoter is IQuoter {
         public
         view
         override
-        returns (uint256 amountReceived, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed)
+        returns (uint256 amountReceived, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed, uint256 gasEstimate)
     {
         int256 amount0;
         int256 amount1;
@@ -69,7 +69,7 @@ contract Quoter is IQuoter {
         public
         view
         override
-        returns (uint256 amountReceived, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed)
+        returns (uint256 amountReceived, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed, uint256 gasEstimate)
     {
         address pool = getPool(params.tokenIn, params.tokenOut, params.fee);
 
@@ -82,7 +82,7 @@ contract Quoter is IQuoter {
             sqrtPriceLimitX96: 0
         });
 
-        (amountReceived, sqrtPriceX96After, initializedTicksCrossed) = quoteExactInputSingleWithPool(poolParams);
+        (amountReceived, sqrtPriceX96After, initializedTicksCrossed,) = quoteExactInputSingleWithPool(poolParams);
     }
 
     /// @inheritdoc IQuoter
@@ -90,7 +90,12 @@ contract Quoter is IQuoter {
         public
         view
         override
-        returns (uint256 amountOut, uint160[] memory sqrtPriceX96AfterList, uint32[] memory initializedTicksCrossedList)
+        returns (
+            uint256 amountOut,
+            uint160[] memory sqrtPriceX96AfterList,
+            uint32[] memory initializedTicksCrossedList,
+            uint256 gasEstimate
+        )
     {
         sqrtPriceX96AfterList = new uint160[](path.numPools());
         initializedTicksCrossedList = new uint32[](path.numPools());
@@ -100,7 +105,7 @@ contract Quoter is IQuoter {
             (address tokenIn, address tokenOut, uint24 fee) = path.decodeFirstPool();
 
             // the outputs of prior swaps become the inputs to subsequent ones
-            (uint256 _amountOut, uint160 _sqrtPriceX96After, uint32 initializedTicksCrossed) = quoteExactInputSingle(
+            (uint256 _amountOut, uint160 _sqrtPriceX96After, uint32 initializedTicksCrossed,) = quoteExactInputSingle(
                 QuoteExactInputSingleParams({
                     tokenIn: tokenIn,
                     tokenOut: tokenOut,
@@ -119,7 +124,7 @@ contract Quoter is IQuoter {
             if (path.hasMultiplePools()) {
                 path = path.skipToken();
             } else {
-                return (amountIn, sqrtPriceX96AfterList, initializedTicksCrossedList);
+                return (amountIn, sqrtPriceX96AfterList, initializedTicksCrossedList, 0);
             }
         }
     }
@@ -129,7 +134,7 @@ contract Quoter is IQuoter {
         public
         view
         override
-        returns (uint256 amountIn, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed)
+        returns (uint256 amountIn, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed, uint256 gasEstimate)
     {
         int256 amount0;
         int256 amount1;
@@ -166,7 +171,7 @@ contract Quoter is IQuoter {
         public
         view
         override
-        returns (uint256 amountIn, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed)
+        returns (uint256 amountIn, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed, uint256 gasEstimate)
     {
         address pool = getPool(params.tokenIn, params.tokenOut, params.fee);
 
@@ -179,7 +184,7 @@ contract Quoter is IQuoter {
             sqrtPriceLimitX96: 0
         });
 
-        (amountIn, sqrtPriceX96After, initializedTicksCrossed) = quoteExactOutputSingleWithPool(poolParams);
+        (amountIn, sqrtPriceX96After, initializedTicksCrossed,) = quoteExactOutputSingleWithPool(poolParams);
     }
 
     /// @inheritdoc IQuoter
@@ -187,7 +192,12 @@ contract Quoter is IQuoter {
         public
         view
         override
-        returns (uint256 amountIn, uint160[] memory sqrtPriceX96AfterList, uint32[] memory initializedTicksCrossedList)
+        returns (
+            uint256 amountIn,
+            uint160[] memory sqrtPriceX96AfterList,
+            uint32[] memory initializedTicksCrossedList,
+            uint256 gasEstimate
+        )
     {
         sqrtPriceX96AfterList = new uint160[](path.numPools());
         initializedTicksCrossedList = new uint32[](path.numPools());
@@ -197,7 +207,7 @@ contract Quoter is IQuoter {
             (address tokenOut, address tokenIn, uint24 fee) = path.decodeFirstPool();
 
             // the inputs of prior swaps become the outputs of subsequent ones
-            (uint256 _amountIn, uint160 _sqrtPriceX96After, uint32 _initializedTicksCrossed) = quoteExactOutputSingle(
+            (uint256 _amountIn, uint160 _sqrtPriceX96After, uint32 _initializedTicksCrossed,) = quoteExactOutputSingle(
                 QuoteExactOutputSingleParams({
                     tokenIn: tokenIn,
                     tokenOut: tokenOut,
@@ -216,7 +226,7 @@ contract Quoter is IQuoter {
             if (path.hasMultiplePools()) {
                 path = path.skipToken();
             } else {
-                return (amountOut, sqrtPriceX96AfterList, initializedTicksCrossedList);
+                return (amountOut, sqrtPriceX96AfterList, initializedTicksCrossedList, 0);
             }
         }
     }

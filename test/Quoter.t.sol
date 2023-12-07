@@ -63,7 +63,7 @@ contract QuoterTest is Test {
             paramsV3.tokenIn = eth;
         }
 
-        (uint256 amountReceivedV3, uint160 sqrtPriceX96AfterV3,) = quoterV3.quoteExactInputSingle(paramsV3);
+        (uint256 amountReceivedV3, uint160 sqrtPriceX96AfterV3,,) = quoterV3.quoteExactInputSingle(paramsV3);
 
         uint256 amountReceivedV2;
         uint160 sqrtPriceX96AfterV2;
@@ -120,7 +120,7 @@ contract QuoterTest is Test {
             paramsV3.tokenIn = eth;
         }
 
-        (uint256 amountInV3, uint160 sqrtPriceX96AfterV3,) = quoterV3.quoteExactOutputSingle(paramsV3);
+        (uint256 amountInV3, uint160 sqrtPriceX96AfterV3,,) = quoterV3.quoteExactOutputSingle(paramsV3);
 
         uint256 amountInV2;
         uint160 sqrtPriceX96AfterV2;
