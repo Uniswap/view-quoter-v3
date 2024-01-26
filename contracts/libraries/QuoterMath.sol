@@ -105,7 +105,7 @@ library QuoterMath {
     /// @return sqrtPriceAfterX96 the price of the pool after the swap
     /// @return initializedTicksCrossed the number of initialized ticks LOADED IN
     function quote(IUniswapV3Pool pool, int256 amount, QuoteParams memory quoteParams)
-        public
+        internal
         view
         returns (int256 amount0, int256 amount1, uint160 sqrtPriceAfterX96, uint32 initializedTicksCrossed)
     {
