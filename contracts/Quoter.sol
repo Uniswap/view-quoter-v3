@@ -25,7 +25,7 @@ contract Quoter is IQuoter {
     using Path for bytes;
 
     // The v3 factory address
-    address internal immutable factory;
+    address public immutable factory;
 
     constructor(address _factory) {
         factory = _factory;
