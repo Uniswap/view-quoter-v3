@@ -16,6 +16,7 @@ interface IQuoter {
     /// @return initializedTicksCrossedList List of number of initialized ticks loaded
     function quoteExactInput(bytes memory path, uint256 amountIn)
         external
+        view
         returns (
             uint256 amountOut,
             uint160[] memory sqrtPriceX96AfterList,
@@ -45,6 +46,7 @@ interface IQuoter {
     /// @return initializedTicksCrossed The number of initialized ticks loaded
     function quoteExactInputSingleWithPool(QuoteExactInputSingleWithPoolParams memory params)
         external
+        view
         returns (uint256 amountOut, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed, uint256 gasEstimate);
 
     struct QuoteExactInputSingleParams {
@@ -67,6 +69,7 @@ interface IQuoter {
     /// @return initializedTicksCrossed The number of initialized ticks loaded
     function quoteExactInputSingle(QuoteExactInputSingleParams memory params)
         external
+        view
         returns (uint256 amountOut, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed, uint256 gasEstimate);
 
     struct QuoteExactOutputSingleWithPoolParams {
@@ -91,6 +94,7 @@ interface IQuoter {
     /// @return initializedTicksCrossed The number of initialized ticks loaded
     function quoteExactOutputSingleWithPool(QuoteExactOutputSingleWithPoolParams memory params)
         external
+        view
         returns (uint256 amountIn, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed, uint256 gasEstimate);
 
     struct QuoteExactOutputSingleParams {
@@ -113,6 +117,7 @@ interface IQuoter {
     /// @return initializedTicksCrossed The number of initialized ticks loaded
     function quoteExactOutputSingle(QuoteExactOutputSingleParams memory params)
         external
+        view
         returns (uint256 amountIn, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed, uint256 gasEstimate);
 
     /// @notice Returns the amount in required for a given exact output swap without executing the swap
@@ -123,6 +128,7 @@ interface IQuoter {
     /// @return initializedTicksCrossedList List of the initialized ticks that the swap crossed for each pool in the path
     function quoteExactOutput(bytes memory path, uint256 amountOut)
         external
+        view
         returns (
             uint256 amountIn,
             uint160[] memory sqrtPriceX96AfterList,
