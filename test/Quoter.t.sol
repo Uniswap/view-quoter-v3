@@ -15,6 +15,9 @@ contract QuoterTest is Test {
     address usdc = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
     address eth = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
 
+    address dai = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
+    address wbtc = 0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599;
+
     function setUp() public {
         mainnetFork = vm.createSelectFork(vm.envString("MAINNET_RPC_URL"));
 
@@ -136,5 +139,32 @@ contract QuoterTest is Test {
 
         assertEq(amountInV2 == amountInV3, true);
         assertEq(sqrtPriceX96AfterV3 == sqrtPriceX96AfterV2, true);
+    }
+
+    function testIlliquidPoolOutputQuoters() public {
+        // 10 wbtc out
+        uint256 amount = 10 * 1e8;
+
+        IQuoterV2.QuoteExactOutputSingleParams memory paramsV2 = IQuoterV2.QuoteExactOutputSingleParams({
+            tokenIn: dai,
+            tokenOut: wbtc,
+            amount: amount,
+            fee: 10000,
+            sqrtPriceLimitX96: 0
+        });
+
+        IQuoter.QuoteExactOutputSingleParams memory paramsV3 = IQuoter.QuoteExactOutputSingleParams({
+            tokenIn: dai,
+            tokenOut: wbtc,
+            amount: amount,
+            fee: 10000,
+            sqrtPriceLimitX96: 0
+        });
+
+        vm.expectRevert();
+        quoterV3.quoteExactOutputSingle(paramsV3);
+
+        vm.expectRevert();
+        quoterV2.quoteExactOutputSingle(paramsV2);
     }
 }
