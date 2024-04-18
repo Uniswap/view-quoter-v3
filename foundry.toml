@@ -7,10 +7,12 @@ libs = ["lib"]
 
 [rpc_endpoints]
 mainnet = "${MAINNET_RPC_URL}"
+sepolia = "${SEPOLIA_RPC_URL}"
 polygon = "${POLYGON_RPC_URL}"
 polygon_mumbai = "${POLYGON_MUMBAI_RPC_URL}"
 
 [etherscan]
 mainnet = { key = "${MAINNET_ETHERSCAN_API_KEY}" }
+sepolia = { key = "${MAINNET_ETHERSCAN_API_KEY}", chain = 11155111 }
 polygon = { key = "${POLYGON_ETHERSCAN_API_KEY}", chain = 137 }
 polygon_mumbai = { key = "${POLYGON_ETHERSCAN_API_KEY}", chain = 80001 }
