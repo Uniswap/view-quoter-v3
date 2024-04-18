@@ -12,6 +12,8 @@ polygon = "${POLYGON_RPC_URL}"
 polygon_mumbai = "${POLYGON_MUMBAI_RPC_URL}"
 base = "${BASE_RPC_URL}"
 base_sepolia = "${BASE_SEPOLIA_RPC_URL}"
+arbitrum = "${ARBITRUM_RPC_URL}"
+arbitrum_sepolia = "${ARBITRUM_SEPOLIA_RPC_URL}"
 
 [etherscan]
 mainnet = { key = "${MAINNET_ETHERSCAN_API_KEY}" }
@@ -20,3 +22,5 @@ polygon = { key = "${POLYGON_ETHERSCAN_API_KEY}", chain = 137 }
 polygon_mumbai = { key = "${POLYGON_ETHERSCAN_API_KEY}", chain = 80001 }
 base = { key = "${BASE_ETHERSCAN_API_KEY}", chain = 8453, url = "https://api.basescan.org/api" }
 base_sepolia = { key = "${BASE_ETHERSCAN_API_KEY}", chain = 84532, url = "https://api-sepolia.basescan.org/api" }
+arbitrum = { key = "${ARBITRUM_ETHERSCAN_API_KEY}", chain = 42161, url = "https://api.arbiscan.io/api" }
+arbitrum_sepolia = { key = "${ARBITRUM_ETHERSCAN_API_KEY}", chain = 421614, url = "https://api-sepolia.arbiscan.io/api" }
