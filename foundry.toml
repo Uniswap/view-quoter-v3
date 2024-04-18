@@ -14,6 +14,8 @@ base = "${BASE_RPC_URL}"
 base_sepolia = "${BASE_SEPOLIA_RPC_URL}"
 arbitrum = "${ARBITRUM_RPC_URL}"
 arbitrum_sepolia = "${ARBITRUM_SEPOLIA_RPC_URL}"
+optimism = "${OPTIMISM_RPC_URL}"
+optimism_sepolia = "${OPTIMISM_SEPOLIA_RPC_URL}"
 
 [etherscan]
 mainnet = { key = "${MAINNET_ETHERSCAN_API_KEY}" }
@@ -24,3 +26,5 @@ base = { key = "${BASE_ETHERSCAN_API_KEY}", chain = 8453, url = "https://api.bas
 base_sepolia = { key = "${BASE_ETHERSCAN_API_KEY}", chain = 84532, url = "https://api-sepolia.basescan.org/api" }
 arbitrum = { key = "${ARBITRUM_ETHERSCAN_API_KEY}", chain = 42161, url = "https://api.arbiscan.io/api" }
 arbitrum_sepolia = { key = "${ARBITRUM_ETHERSCAN_API_KEY}", chain = 421614, url = "https://api-sepolia.arbiscan.io/api" }
+optimism = { key = "${OPTIMISM_ETHERSCAN_API_KEY}", chain = 10, url = "https://api-optimistic.etherscan.io/api" }
+optimism_sepolia = { key = "${OPTIMISM_ETHERSCAN_API_KEY}", chain = 11155420, url = "https://api-sepolia-optimistic.etherscan.io/api" }
