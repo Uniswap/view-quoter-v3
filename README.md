@@ -1,10 +1,10 @@
 ## Uniswap v3 view-only quoter
 
-Impliments [QuoterV2](https://github.com/Uniswap/v3-periphery/blob/main/contracts/lens/QuoterV2.sol) but removes the revert and the unused state updates
+This view-only quoter aims to replace [QuoterV2](https://github.com/Uniswap/v3-periphery/blob/main/contracts/lens/QuoterV2.sol) with [Quoter](https://github.com/Uniswap/view-quoter-v3/blob/master/contracts/Quoter.sol) by removing the revert and the unused state updates. [Quoter](https://github.com/Uniswap/view-quoter-v3/blob/master/contracts/Quoter.sol) is being used in [smart-order-router](https://github.com/Uniswap/smart-order-router) for displaying the quote on uniswap UIs. 
 
 The interfaces are the same as the old quoter, but the underlying calls are different.
 
-This code is not audited yet, but actively being shadow tested in https://github.com/Uniswap/routing-api/.
+This code is not audited yet, but actively being shadow tested in [routing-api](https://github.com/Uniswap/routing-api/).
 
 ### View-Only Quoter Addresses
 | Chain Id | Deployment Address                         | V3 Factory                                 |
