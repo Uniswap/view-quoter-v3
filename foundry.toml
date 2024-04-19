@@ -22,6 +22,8 @@ avalanche = "${AVALANCHE_RPC_URL}"
 avalanche_fuji = "${AVALANCHE_FUJI_RPC_URL}"
 celo = "${CELO_RPC_URL}"
 celo_alfajores = "${CELO_ALFAJORES_RPC_URL}"
+blast = "${BLAST_RPC_URL}"
+blast_sepolia = "${BLAST_SEPOLIA_RPC_URL}"
 
 [etherscan]
 mainnet = { key = "${MAINNET_ETHERSCAN_API_KEY}" }
@@ -40,3 +42,5 @@ avalanche = { key = "${AVALANCHE_ETHERSCAN_API_KEY}", chain = 43114, url = "http
 avalanche_fuji = { key = "${AVALANCHE_ETHERSCAN_API_KEY}", chain = 43113, url = "https://api.routescan.io/v2/network/testnet/evm/43113/etherscan" }
 celo = { key = "${CELO_ETHERSCAN_API_KEY}", chain = 42220, url = "https://api.celoscan.io/api" }
 celo_alfajores = { key = "${CELO_ETHERSCAN_API_KEY}", chain = 44787, url = "https://api-alfajores.celoscan.io/api" }
+blast = { key = "${BLAST_ETHERSCAN_API_KEY}", chain = 81457, url = "https://api.blastscan.io/api" }
+blast_sepolia = { key = "${BLAST_ETHERSCAN_API_KEY}", chain = 168587773, url = "https://api-sepolia.blastscan.io/api" }
