@@ -4,9 +4,20 @@ Impliments [QuoterV2](https://github.com/Uniswap/v3-periphery/blob/main/contract
 
 The interfaces are the same as the old quoter, but the underlying calls are different.
 
-This code is unaudited and is a proof of concept.
+This code is not audited yet, but actively being shadow tested in https://github.com/Uniswap/routing-api/.
 
-[Link](https://etherscan.io/address/0x4752ba5DBc23f44D87826276BF6Fd6b1C372aD24) to a current deployment at 0x4752ba5DBc23f44D87826276BF6Fd6b1C372aD24 on Mainnet
+### View-Only Quoter Addresses
+| Chain Id | Deployment Address                         | V3 Factory                                 |
+|----------|--------------------------------------------|--------------------------------------------|
+| 1        | 0x5e55c9e631fae526cd4b0526c4818d6e0a9ef0e3 | 0x1F98431c8aD98523631AE4a59f267346ea31F984 |
+| 10       | 0x5e55c9e631fae526cd4b0526c4818d6e0a9ef0e3 | 0x1F98431c8aD98523631AE4a59f267346ea31F984 |
+| 56       | 0x5e55c9e631fae526cd4b0526c4818d6e0a9ef0e3 | 0xdB1d10011AD0Ff90774D0C6Bb92e5C5c8b4461F7 |
+| 137      | 0x5e55c9e631fae526cd4b0526c4818d6e0a9ef0e3 | 0x1F98431c8aD98523631AE4a59f267346ea31F984 |
+| 8453     | 0x222ca98f00ed15b1fae10b61c277703a194cf5d2 | 0x33128a8fC17869897dcE68Ed026d694621f6FDfD |
+| 42161    | 0x5e55c9e631fae526cd4b0526c4818d6e0a9ef0e3 | 0x1F98431c8aD98523631AE4a59f267346ea31F984 |
+| 42220    | 0x5e55c9e631fae526cd4b0526c4818d6e0a9ef0e3 | 0xAfE208a311B21f13EF87E33A90049fC17A7acDEc |
+| 43114    | 0x5e55C9e631FAE526cd4B0526C4818D6e0a9eF0e3 | 0x1F98431c8aD98523631AE4a59f267346ea31F984 |
+| 81457    | 0x9D0F15f2cf58655fDDcD1EE6129C547fDaeD01b1 | 0x792edAdE80af5fC680d96a2eD80A44247D2Cf6Fd |
 
 ## Forge CLI
 
