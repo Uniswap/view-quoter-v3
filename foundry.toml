@@ -18,6 +18,8 @@ optimism = "${OPTIMISM_RPC_URL}"
 optimism_sepolia = "${OPTIMISM_SEPOLIA_RPC_URL}"
 bsc = "${BSC_RPC_URL}"
 bsc_testnet = "${BSC_TESTNET_RPC_URL}"
+avalanche = "${AVALANCHE_RPC_URL}"
+avalanche_fuji = "${AVALANCHE_FUJI_RPC_URL}"
 
 [etherscan]
 mainnet = { key = "${MAINNET_ETHERSCAN_API_KEY}" }
@@ -32,3 +34,5 @@ optimism = { key = "${OPTIMISM_ETHERSCAN_API_KEY}", chain = 10, url = "https://a
 optimism_sepolia = { key = "${OPTIMISM_ETHERSCAN_API_KEY}", chain = 11155420, url = "https://api-sepolia-optimistic.etherscan.io/api" }
 bsc = { key = "${BSC_ETHERSCAN_API_KEY}", chain = 56, url = "https://api.bscscan.com/api" }
 bsc_testnet = { key = "${BSC_ETHERSCAN_API_KEY}", chain = 97, url = "https://api-testnet.bscscan.com/api" }
+avalanche = { key = "${AVALANCHE_ETHERSCAN_API_KEY}", chain = 43114, url = "https://api.routescan.io/v2/network/mainnet/evm/43114/etherscan" }
+avalanche_fuji = { key = "${AVALANCHE_ETHERSCAN_API_KEY}", chain = 43113, url = "https://api.routescan.io/v2/network/testnet/evm/43113/etherscan" }
