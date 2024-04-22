@@ -41,7 +41,7 @@ contract MyScript is Script {
             return 0x0227628f3F023bb0B980b67D528571c95c6DaC1c;
         // avalanche chain
         } else if (chainId == uint256(43114)) {
-            return 0x1F98431c8aD98523631AE4a59f267346ea31F984;
+            return 0x740b1c1de25031C31FF4fC9A62f554A55cdC1baD;
         // zora chain
         } else if (chainId == uint256(7777777)) {
             return 0x7145F8aeef1f6510E92164038E1B6F8cB2c42Cbb;
