@@ -1,6 +1,6 @@
 ## Uniswap v3 view-only quoter
 
-This view-only quoter aims to replace [QuoterV2](https://github.com/Uniswap/v3-periphery/blob/main/contracts/lens/QuoterV2.sol) with [Quoter](https://github.com/Uniswap/view-quoter-v3/blob/master/contracts/Quoter.sol) by removing the revert and the unused state updates. [QuoterV2](https://github.com/Uniswap/v3-periphery/blob/main/contracts/lens/QuoterV2.sol) with [Quoter](https://github.com/Uniswap/view-quoter-v3/blob/master/contracts/Quoter.sol) is being used in [smart-order-router](https://github.com/Uniswap/smart-order-router) for displaying the quote on uniswap UIs. 
+This view-only quoter aims to replace [QuoterV2](https://github.com/Uniswap/v3-periphery/blob/main/contracts/lens/QuoterV2.sol) with [Quoter](https://github.com/Uniswap/view-quoter-v3/blob/master/contracts/Quoter.sol) by removing the revert and the unused state updates. [QuoterV2](https://github.com/Uniswap/v3-periphery/blob/main/contracts/lens/QuoterV2.sol) is being used in [smart-order-router](https://github.com/Uniswap/smart-order-router) for displaying the quote on uniswap UIs. 
 
 The interfaces are the same as the old quoter, but the underlying calls are different.
 
