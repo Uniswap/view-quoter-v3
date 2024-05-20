@@ -24,6 +24,8 @@ celo = "${CELO_RPC_URL}"
 celo_alfajores = "${CELO_ALFAJORES_RPC_URL}"
 blast = "${BLAST_RPC_URL}"
 blast_sepolia = "${BLAST_SEPOLIA_RPC_URL}"
+zora = "${ZORA_RPC_URL}"
+zora_sepolia = "${ZORA_SEPOLIA_RPC_URL}"
 
 [etherscan]
 mainnet = { key = "${MAINNET_ETHERSCAN_API_KEY}" }
@@ -44,3 +46,5 @@ celo = { key = "${CELO_ETHERSCAN_API_KEY}", chain = 42220, url = "https://api.ce
 celo_alfajores = { key = "${CELO_ETHERSCAN_API_KEY}", chain = 44787, url = "https://api-alfajores.celoscan.io/api" }
 blast = { key = "${BLAST_ETHERSCAN_API_KEY}", chain = 81457, url = "https://api.blastscan.io/api" }
 blast_sepolia = { key = "${BLAST_ETHERSCAN_API_KEY}", chain = 168587773, url = "https://api-sepolia.blastscan.io/api" }
+zora = { key = "${ZORA_ETHERSCAN_API_KEY}", chain = 7777777, url = "https://explorer.zora.energy/api" }
+zora_sepolia = { key = "${ZORA_ETHERSCAN_API_KEY}", chain = 999999999, url = "https://testnet.explorer.zora.energy/api" }
