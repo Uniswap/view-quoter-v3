@@ -3,6 +3,7 @@ pragma solidity ^0.7.6;
 pragma abicoder v2;
 
 import {IUniswapV3Pool} from "v3-core/contracts/interfaces/IUniswapV3Pool.sol";
+import {IUniswapV3PoolSlot0Unchecked} from "../interfaces/IUniswapV3PoolSlot0Unchecked.sol";
 import {IQuoter} from "../interfaces/IQuoter.sol";
 import {SwapMath} from "v3-core/contracts/libraries/SwapMath.sol";
 import {FullMath} from "v3-core/contracts/libraries/FullMath.sol";
@@ -39,25 +40,10 @@ library QuoterMath {
     }
 
     function fillSlot0(IUniswapV3Pool pool) private view returns (Slot0 memory slot0) {
-        (slot0.sqrtPriceX96, slot0.tick,,,,,) = pool.slot0();
+        (slot0.sqrtPriceX96, slot0.tick,,,,,) = IUniswapV3PoolSlot0Unchecked(address(pool)).slot0();
         slot0.tickSpacing = pool.tickSpacing();
 
         return slot0;
-    }
-
-    struct SwapCache {
-        // the protocol fee for the input token
-        uint8 feeProtocol;
-        // liquidity at the beginning of the swap
-        uint128 liquidityStart;
-        // the timestamp of the current block
-        uint32 blockTimestamp;
-        // the current value of the tick accumulator, computed only if we cross an initialized tick
-        int56 tickCumulative;
-        // the current value of seconds per liquidity accumulator, computed only if we cross an initialized tick
-        uint160 secondsPerLiquidityCumulativeX128;
-        // whether we've computed and cached the above two accumulators
-        bool computedLatestObservation;
     }
 
     // the top level state of the swap, the results of which are recorded in storage at the end
